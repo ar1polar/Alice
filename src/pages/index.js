@@ -7,16 +7,27 @@ import { CHAIN_ID, SITE_ERROR, SMARTCONTRACT_ABI, SMARTCONTRACT_ABI_ERC20, SMART
 import Sidebar from '../components/Sidebar'
 import MainContent from '../components/MainContent'
 import Header from '../components/Header'
-import { ethers, providers } from 'ethers'
+import { ethers } from 'ethers'
 import { errorAlert, errorAlertCenter ,errors} from '../components/toastGroup'
 import Moralis from 'moralis'
 import MobileFooter from '../components/MobileFooter'
-import { providerOptions } from '../hook/connectWallet'
 import { checkNetwork } from '../hook/ethereum'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 let web3Modal = undefined
 
 export default function Home({ headerAlert, closeAlert }) {
+  const wallet = useWallet();
+
+  useEffect(() => {
+    async function fetchData() {
+      if (wallet.connected) {
+        // Implement further wallet-related operations here
+        console.log("Wallet is connected:", wallet.publicKey.toString());
+      }
+    }
+    fetchData();
+  }, [wallet.connected]);
 
   const [totalReward, setTotalReward] = useState(0)
   const [loading, setLoading] = useState(false)
@@ -38,21 +49,7 @@ export default function Home({ headerAlert, closeAlert }) {
 
   const connectWallet = async () => {
     if (await checkNetwork()) {
-      web3Modal = new Web3Modal({
-        network: 'mainnet', // optional
-        cacheProvider: true,
-        providerOptions, // required
-      })
       setHomeloading(true) //loading start
-
-      const provider = await web3Modal.connect()
-      const web3Provider = new providers.Web3Provider(provider)
-
-      const signer = web3Provider.getSigner()
-      const address = await signer.getAddress()
-
-      setConnected(true)
-      setSignerAddress(address)
 
       contract = new ethers.Contract(
         SMARTCONTRACT_ADDRESS,
