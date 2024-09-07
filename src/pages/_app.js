@@ -5,6 +5,7 @@ import Loading from '../components/Loading'
 import Moralis from 'moralis'
 import { APP_ID, SERVER_URL, SITE_ERROR } from '../../config'
 import {  errorAlertCenter,errors } from '../components/toastGroup'
+import WalletConnectionProvider from '../contexts/solana_wallet'
 
 function MyApp({ Component, pageProps }) {
   const [pageLoading, setPageLoading] = useState(false)
@@ -17,7 +18,7 @@ function MyApp({ Component, pageProps }) {
     errorAlertCenter(SITE_ERROR[1]);
   }
   return (
-    <>
+    <WalletConnectionProvider>
       <Component {...pageProps}
         startLoading={() => setPageLoading(true)}
         closeLoading={() => setPageLoading(false)}
@@ -26,7 +27,7 @@ function MyApp({ Component, pageProps }) {
       />
       <ToastContainer style={{ fontSize: 14, padding: '5px !important', lineHeight: '15px' }} />
       <Loading loading={pageLoading} />
-    </>
+    </WalletConnectionProvider>
   )
 }
 
